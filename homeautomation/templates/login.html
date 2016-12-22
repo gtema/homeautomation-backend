@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ title }} | Login</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('.static', filename='css/bootstrap.min.css') }}">
+</head>
+<body>
+
+  <div class="container">
+
+    <h1>StockManager</h1>
+
+    {% for message in get_flashed_messages() %}
+      <div class="flash">{{ message }}</div>
+    {% endfor %}
+
+    <h3>Login</h3>
+
+    {% if error %}<p class="error"><strong>Error:</strong> {{ error }}{% endif %}</p>
+    <form action="" method="post" name="login">
+	{{ form.hidden_tag() }}
+      <dl>
+        <dt>{{ form.username.label }}:</dt>
+        <dd>{{ form.username }}</dd>
+        <dt>{{ form.password.label }}:</dt>
+        <dd>{{ form.password }}</dd>
+        <br><br>
+        <dd><input type="submit" class="btn btn-default" value="Login"></dd>
+        <span>Use "admin" for username and password</span>
+      </dl>
+    </form>
+
+  </div>
+<!--
+  <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='main.js') }}"></script>
+-->
+</body>
+</html>

@@ -1,0 +1,4 @@
+.eric*
+*.pyc
+venv
+__pycache__

@@ -1,0 +1,33 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="appContainer">
+    <header id="appHeader">
+        <h1>Catalogue</h1>
+    <section id="appContent">
+    </section>
+    <footer id="appFooter">
+        Footer
+    </footer>
+</section>
+
+<script id="groupTemplate" type="text/template">
+    <li>
+        <span class="itemName"><%= name %></span>
+    </li>
+
+</script>
+
+
+        <script src="{{ url_for('.static', filename='js/lib/jquery-3.1.0.min.js') }}"></script>
+        <script src="{{ url_for('.static', filename='js/lib/underscore.js') }}"></script>
+        <script src="{{ url_for('.static', filename='js/lib/backbone.js') }}"></script>
+        <script src="{{ url_for('.static', filename='js/models/group.js') }}"></script>
+        <script src="{{ url_for('.static', filename='js/collections/groups.js') }}"></script>
+        <script src="{{ url_for('.static', filename='js/views/group.js') }}"></script>
+        <script src="{{ url_for('.static', filename='js/views/groups.js') }}"></script>
+        <script src="{{ url_for('.static', filename='js/app.js') }}"></script>
+
+{% endblock %}
