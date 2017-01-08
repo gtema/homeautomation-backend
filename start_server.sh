@@ -1,4 +1,4 @@
 #/bin/bash
 
-. venv/bin/activate
+source venv/bin/activate
 python run.py

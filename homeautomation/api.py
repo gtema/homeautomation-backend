@@ -1,26 +1,27 @@
 """
 API for the HomeAutomation (CRUD services)
 """
-from flask import Blueprint,  request, jsonify, make_response, abort
-from flask_restful import Api,  Resource
+from flask import Blueprint, request, jsonify, make_response, abort
+from flask_restful import Api, Resource
 from flask_login import login_required
-from homeautomation.models import StockProductCategory,  StockProduct,  StockProductItem
-from homeautomation.schemas import CategorySchema,  ProductSchema,  ProductItemSchema
-from homeautomation import db
+from . import db
+from .models import StockProductCategory, StockProduct,\
+                                  StockProductItem
+from .schemas import CategorySchema, ProductSchema, \
+                                   ProductItemSchema
 
-api_bp = Blueprint('api',  __name__)
-api = Api(api_bp)
 
-'''
-Base CRUD services class
-it requires SQLAlchemy model, Marshmallow schema and model qualifier (i.e. ID, PARENT_ID) to be set in the constructor
-'''
 class BaseCrud(Resource):
     '''
-    Constructor, setting model, schema and filter qualifier
+    Base CRUD services class
+    it requires SQLAlchemy model, Marshmallow schema and model qualifier
+    (i.e. ID, PARENT_ID) to be set in the constructor
     '''
+
     def __init__(self,  model,  schema,  qualifier):
-        print ('init base ',  model,  schema)
+        '''
+        Constructor, setting model, schema and filter qualifier
+        '''
         self.schema = schema
         self.model = model
         self.qualifier = qualifier
@@ -29,8 +30,8 @@ class BaseCrud(Resource):
         '''
         GET method to get JSON representation of items by qualifier
         '''
-        if (id != None):
-            items = self.model.query.filter( self.qualifier == id )
+        if (id is not None):
+            items = self.model.query.filter(self.qualifier == id)
         else:
             items = self.model.query.all()
 
@@ -43,7 +44,7 @@ class BaseCrud(Resource):
 
         return res
 
-    def put(self,  id = 0):
+    def put(self, id=0):
         '''
         PUT method to modify existing item
         '''
@@ -53,11 +54,15 @@ class BaseCrud(Resource):
             return make_response(jsonify({'message': 'No input'}), 400)
 
         if id == 0:
-            return make_response(jsonify({'message': 'ID is missing or wrong'}), 400)
+            return make_response(
+                        jsonify({'message': 'ID is missing or wrong'}),
+                        400)
 
         item = self.model.query.filter(self.qualifier == id).first_or_404()
 
-        data,  errors = self.schema.load(json,  instance = item,  session = db.session)
+        data, errors = self.schema.load(json,
+                                        instance=item,
+                                        session=db.session)
 
         if errors:
             return make_response(jsonify(errors),  422)
@@ -83,7 +88,7 @@ class BaseCrud(Resource):
 
         return make_response(self.schema.jsonify(item), 201)
 
-    def delete(self,  id = 0):
+    def delete(self,  id=0):
         '''
         DELETE method to drop product
         '''
@@ -94,7 +99,7 @@ class BaseCrud(Resource):
         item = self.model.query.filter(self.model.id == id).first_or_404()
 
 #        if not item:
-#            return make_response(jsonify({'message': 'Entity not found'}), 422)
+#            return make_response(jsonify({'message': 'Entity not found'}),422)
 
         db.session.delete(item)
         db.session.commit()
@@ -104,6 +109,8 @@ class BaseCrud(Resource):
 '''
 API classes
 '''
+
+
 class StockCategories(BaseCrud):
     '''
     Api to return all subCategorys of the given Category (or root, parent_id=0)
@@ -111,23 +118,26 @@ class StockCategories(BaseCrud):
     decorators = [login_required]
 
     def __init__(self):
-        print ('init productItem')
-        super().__init__(StockProductCategory,  CategorySchema(many = True),  StockProductCategory.parent_id)
+        super().__init__(StockProductCategory,
+                         CategorySchema(many=True),
+                         StockProductCategory.parent_id)
 
-    def get(self,  id = None):
+    def get(self,  id=None):
         '''
-        GET method to return all subCategorys of the given Category (parent_id=<CATEGORY_ID:0>
+        GET method to return all subCategorys of the given Category
+        (parent_id=<CATEGORY_ID:0>)
         '''
         return super().get(id)
 
-    def post(self, id = 0):
+    def post(self, id=0):
         return abort(405)
 
-    def put(self, id = 0):
+    def put(self, id=0):
         return abort(405)
 
-    def delete(self, id = 0):
+    def delete(self, id=0):
         return abort(405)
+
 
 class StockCategory(BaseCrud):
     '''
@@ -136,10 +146,11 @@ class StockCategory(BaseCrud):
     decorators = [login_required]
 
     def __init__(self):
-        print ('init productItem')
-        super().__init__(StockProductCategory,  CategorySchema(),  StockProductCategory.id)
+        super().__init__(StockProductCategory,
+                         CategorySchema(),
+                         StockProductCategory.id)
 
-    def get(self,  id = 0):
+    def get(self,  id=0):
         '''
         GET method to return the single Product by ID
         '''
@@ -157,19 +168,23 @@ class StockCategory(BaseCrud):
         '''
         return super().post()
 
-    def delete(self,  id = 0):
+    def delete(self,  id=0):
         '''
         DELETE method to delete Category
         '''
-        print ("delete Category ",  id)
-        item = StockProductCategory.query.filter(StockProductCategory.id == id).first_or_404()
+        item = StockProductCategory.query.\
+            filter(StockProductCategory.id == id).\
+            first_or_404()
 
         if not item:
-            return make_response(jsonify({'message': 'Category not found'}), 422)
+            return make_response(jsonify({'message': 'Category not found'}),
+                                 422
+                                 )
 
         db.session.delete(item)
         db.session.commit()
         return make_response(jsonify({'message': 'ok'}), 200)
+
 
 class StockCategoryProducts(BaseCrud):
     '''
@@ -178,20 +193,22 @@ class StockCategoryProducts(BaseCrud):
     decorators = [login_required]
 
     def __init__(self):
-        print ('init productItem')
-        super().__init__(StockProduct,  ProductSchema(many = True),  StockProduct.category_id)
+        super().__init__(StockProduct,
+                         ProductSchema(many=True),
+                         StockProduct.category_id)
 
     def get(self,  id):
         return super().get(id)
 
-    def post(self, id = 0):
+    def post(self, id=0):
         return abort(405)
 
-    def put(self, id = 0):
+    def put(self, id=0):
         return abort(405)
 
-    def delete(self, id = 0):
+    def delete(self, id=0):
         return abort(405)
+
 
 class StockCategoryProduct(BaseCrud):
     '''
@@ -200,24 +217,31 @@ class StockCategoryProduct(BaseCrud):
     decorators = [login_required]
 
     def __init__(self):
-        print ('init productItem')
-        super().__init__(StockProduct,  ProductSchema(),  StockProduct.id)
+        super().__init__(StockProduct, ProductSchema(), StockProduct.id)
 
-    def get(self,  id = -1):
+    def get(self,  id=-1):
         '''
         GET method to return the single Product by ID
         '''
         if id == -1:
-            return make_response(jsonify({'message': 'Product GET without ID is not allowed'}), 422)
+            return make_response(
+                    jsonify({
+                     'message': 'Product GET without ID is not allowed'
+                    }),
+                    422)
         else:
             return super().get(id)
 
-    def put(self,  id = -1):
+    def put(self,  id=-1):
         '''
         PUT method to modify the single Product by ID
         '''
         if id == -1:
-            return make_response(jsonify({'message': 'Product PUT without ID is not allowed'}), 422)
+            return make_response(
+                            jsonify({
+                             'message': 'Product PUT without ID is not allowed'
+                            }),
+                            422)
         else:
             return super().put(id)
 
@@ -227,17 +251,24 @@ class StockCategoryProduct(BaseCrud):
         '''
         return super().post()
 
-    def delete(self,  id = -1):
+    def delete(self,  id=-1):
         '''
         DELETE method to drop product
         '''
         if id == -1:
-            return make_response(jsonify({'message': 'Product DELETE without ID is not allowed'}), 422)
-        print ("delete Category ",  id)
+            return make_response(
+                        jsonify({
+                          'message': 'Product DELETE without ID is not allowed'
+                        }),
+                        422)
         item = StockProduct.query.filter(StockProduct.id == id).first_or_404()
 
         if not item:
-            return make_response(jsonify({'message': 'Product not found'}), 422)
+            return make_response(
+                        jsonify({
+                            'message': 'Product not found'
+                        }),
+                        422)
 
         db.session.delete(item)
         db.session.commit()
@@ -252,19 +283,20 @@ class StockCategoryProductItems(BaseCrud):
     decorators = [login_required]
 
     def __init__(self):
-        print ('init productItem')
-        super().__init__(StockProductItem,  ProductItemSchema(many = True),  StockProductItem.product_id)
+        super().__init__(StockProductItem,
+                         ProductItemSchema(many=True),
+                         StockProductItem.product_id)
 
     def get(self,  id):
         return super().get(id)
 
-    def post(self, id = 0):
+    def post(self, id=0):
         return abort(405)
 
-    def put(self, id = 0):
+    def put(self, id=0):
         return abort(405)
 
-    def delete(self, id = 0):
+    def delete(self, id=0):
         return abort(405)
 
 
@@ -275,8 +307,9 @@ class StockCategoryProductItem(BaseCrud):
     decorators = [login_required]
 
     def __init__(self):
-        print ('init productItem')
-        super().__init__(StockProductItem,  ProductItemSchema(many = False),  StockProductItem.id)
+        super().__init__(StockProductItem,
+                         ProductItemSchema(many=False),
+                         StockProductItem.id)
 
     def get(self,  id):
         return super().get(id)
@@ -293,7 +326,7 @@ class StockCategoryProductItem(BaseCrud):
         '''
         return super().post()
 
-    def delete(self,  id = 0):
+    def delete(self,  id=0):
         '''
         DELETE method to mark item as consumed
         no ID is expected. Entity, marked as started, will be "consumed"
@@ -301,9 +334,13 @@ class StockCategoryProductItem(BaseCrud):
         if id:
             item = self.model.query.filter(self.model.id == id).first_or_404()
         else:
-            item = self.model.query.filter(StockProductItem.is_started == True).first()
+            item = self.model.query.filter(StockProductItem.is_started).first()
             if not item:
-                return make_response(jsonify({'message': 'No started entity found'}), 422)
+                return make_response(
+                                jsonify({
+                                 'message': 'No started entity found'
+                                }),
+                                422)
 
         if item:
             db.session.delete(item)
@@ -312,23 +349,46 @@ class StockCategoryProductItem(BaseCrud):
         return make_response(jsonify({'message': 'ok'}), 200)
 
 
+api_bp = Blueprint('api',  __name__)
+api = Api(api_bp)
+
 # Get subCategorys by category_id
-api.add_resource(StockCategories,  '/stock/categories_by_category_id/<int:id>',  endpoint = 'categories_by_category_id')
-api.add_resource(StockCategories,  '/stock/categories',  endpoint = 'categories_default')
+api.add_resource(StockCategories,
+                 '/stock/categories_by_category_id/<int:id>',
+                 endpoint='categories_by_category_id')
+api.add_resource(StockCategories,
+                 '/stock/categories',
+                 endpoint='categories_default')
 # ADD, MODIFY, DELETE
-api.add_resource(StockCategory,   '/stock/category/<int:id>',  endpoint = 'category_by_id')
-api.add_resource(StockCategory,   '/stock/category',  endpoint = 'add_category')
+api.add_resource(StockCategory,
+                 '/stock/category/<int:id>',
+                 endpoint='category_by_id')
+api.add_resource(StockCategory,
+                 '/stock/category',
+                 endpoint='add_category')
 
 # GET<Products_by_ID>
-api.add_resource(StockCategoryProducts,  '/stock/products_by_category_id/<int:id>',  endpoint = 'products_by_category')
+api.add_resource(StockCategoryProducts,
+                 '/stock/products_by_category_id/<int:id>',
+                 endpoint='products_by_category')
 
 # GET<Product_by_ID>, Add, Modify, Delete
-api.add_resource(StockCategoryProduct,   '/stock/product/<int:id>',  endpoint = 'product_by_id')
-api.add_resource(StockCategoryProduct,   '/stock/product',  endpoint = 'add_product')
+api.add_resource(StockCategoryProduct,
+                 '/stock/product/<int:id>',
+                 endpoint='product_by_id')
+api.add_resource(StockCategoryProduct,
+                 '/stock/product',
+                 endpoint='add_product')
 
 # Get<Items_by_productID>
-api.add_resource(StockCategoryProductItems,  '/stock/product_items_by_product_id/<int:id>',  endpoint = 'product_items_by_product')
+api.add_resource(StockCategoryProductItems,
+                 '/stock/product_items_by_product_id/<int:id>',
+                 endpoint='product_items_by_product')
 
 # Add new product Item, Delete (consume entity)
-api.add_resource(StockCategoryProductItem,   '/stock/product_item/<int:id>',  endpoint = 'alter_product_item')
-api.add_resource(StockCategoryProductItem,   '/stock/product_item',  endpoint = 'add_product_item')
+api.add_resource(StockCategoryProductItem,
+                 '/stock/product_item/<int:id>',
+                 endpoint='alter_product_item')
+api.add_resource(StockCategoryProductItem,
+                 '/stock/product_item',
+                 endpoint='add_product_item')

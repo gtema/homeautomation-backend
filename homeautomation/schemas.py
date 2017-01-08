@@ -1,10 +1,13 @@
-from homeautomation import ma
-from homeautomation.models import StockProductCategory,  StockProduct,  StockProductItem
-from marshmallow import fields,  ValidationError
+from . import ma
+from .models import StockProductCategory, StockProduct,\
+                                  StockProductItem
+from marshmallow import fields, ValidationError
+
 
 def must_not_be_blank(data):
     if not data:
         raise ValidationError('Data not provided')
+
 
 class CategorySchema(ma.ModelSchema):
     '''
@@ -12,10 +15,11 @@ class CategorySchema(ma.ModelSchema):
     '''
     class Meta:
         model = StockProductCategory
-    
-    id = fields.Int(dump_only = True)
+
+    id = fields.Int(dump_only=True)
     parent_id = fields.Int()
-    name = fields.Str(required = True)
+    name = fields.Str(required=True)
+
 
 class ProductSchema(ma.ModelSchema):
     '''
@@ -23,16 +27,16 @@ class ProductSchema(ma.ModelSchema):
     '''
     class Meta:
         model = StockProduct
-#        fields = ('id',  'category_id',  'name',  'volume',  'count_quantities',  'amount',  'first_started_id',  'first_started_ed')
 
-    id = fields.Int(dump_only = True)
-    category_id = fields.Int(required = True,  validate = must_not_be_blank)
-    name = fields.Str(required = True)
+    id = fields.Int(dump_only=True)
+    category_id = fields.Int(required=True,  validate=must_not_be_blank)
+    name = fields.Str(required=True)
     volume = fields.Str()
     count_quantities = fields.Boolean()
-    amount = fields.Int(dump_only = True)
-    first_started_id = fields.Int(dump_only = True)
-    first_started_ed = fields.Date(dump_only = True)
+    amount = fields.Int(dump_only=True)
+    first_started_id = fields.Int(dump_only=True)
+    first_started_ed = fields.Date(dump_only=True)
+
 
 class ProductItemSchema(ma.ModelSchema):
     '''
@@ -41,8 +45,8 @@ class ProductItemSchema(ma.ModelSchema):
     class Meta:
         model = StockProductItem
 
-    id = fields.Int(dump_only = True)
-    product_id = fields.Int(required = True,  validate = must_not_be_blank)
+    id = fields.Int(dump_only=True)
+    product_id = fields.Int(required=True, validate=must_not_be_blank)
     is_started = fields.Boolean()
+    is_disposed = fields.Boolean()
     expiry_date = fields.Date()
-
