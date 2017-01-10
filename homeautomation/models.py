@@ -55,6 +55,7 @@ class StockProductCategory(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     parent_id = db.Column(db.Integer,  db.ForeignKey('cat_category.id'))
     name = db.Column(db.String(255), nullable=False)
+    prio = db.Column(db.Integer, default=0)
 #    products = db.relationship("Products",  backref = "parent")
 
 

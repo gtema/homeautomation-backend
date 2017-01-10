@@ -19,6 +19,7 @@ class CategorySchema(ma.ModelSchema):
     id = fields.Int(dump_only=True)
     parent_id = fields.Int()
     name = fields.Str(required=True)
+    prio = fields.Int()
 
 
 class ProductSchema(ma.ModelSchema):
