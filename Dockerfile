@@ -1,5 +1,13 @@
-FROM grahamdumpleton/mod-wsgi-docker:python-3.5-onbuild
+FROM python:3.5-alpine
 
 MAINTAINER Artem Goncharov
 
-CMD ["api.wsgi"]
+ADD . /code
+
+WORKDIR /code
+
+EXPOSE 5000
+
+RUN pip install -r requirements.txt
+
+CMD ["python", "run.py"]
