@@ -6,6 +6,7 @@ from flask_marshmallow import Marshmallow
 from flask_cors import CORS
 
 
+cache = Cache(config={'CACHE_TYPE': 'simple'})
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('config')
 app.config.from_pyfile('config.py')
@@ -16,7 +17,7 @@ lm.init_app(app)
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
-cache = Cache(app)
+cache.init_app(app)
 
 
 from .api import api_bp

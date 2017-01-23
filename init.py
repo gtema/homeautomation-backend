@@ -24,6 +24,20 @@ with open('categories.csv') as f:
             )
         )
 
+with open('products.csv') as f:
+    # assume first line is header
+    cf = csv.DictReader(f, delimiter=',')
+    for row in cf:
+        db.session.add(
+            StockProduct(
+                id=row.get('Id'),
+                category_id=row.get('Category_id'),
+                name=row.get('Name'),
+                volume=row.get('Volume'),
+                sum_amounts=row.get('Sum_amounts')
+            )
+        )
+
 
 # db.session.add(StockProductCategory(id=1, parent_id=0, name='Lebensmittel', prio=0))
 # db.session.add(StockProductCategory(id=2, parent_id=0, name='Drogerie', prio=2))

@@ -33,7 +33,7 @@ class ProductSchema(ma.ModelSchema):
     category_id = fields.Int(required=True,  validate=must_not_be_blank)
     name = fields.Str(required=True)
     volume = fields.Str()
-    count_quantities = fields.Boolean()
+    sum_amounts = fields.Boolean()
     amount = fields.Int(dump_only=True)
     first_started_id = fields.Int(dump_only=True)
     first_started_ed = fields.Date(dump_only=True)
@@ -51,3 +51,4 @@ class ProductItemSchema(ma.ModelSchema):
     is_started = fields.Boolean()
     is_disposed = fields.Boolean()
     expiry_date = fields.Date()
+    is_valid = fields.Boolean()

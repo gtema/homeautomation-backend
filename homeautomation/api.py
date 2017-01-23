@@ -5,6 +5,7 @@ from flask import Blueprint, request, jsonify, make_response, abort
 from flask_restful import Api, Resource
 from flask_login import login_required
 from . import db
+# from . import cache
 from .models import StockProductCategory, StockProduct,\
                                   StockProductItem
 from .schemas import CategorySchema, ProductSchema, \
@@ -40,7 +41,8 @@ class BaseCrud(Resource):
             res = self.schema.dump(items).data
         else:
             # single item
-            res = self.schema.dump(items.first()).data
+            # if nothing found return 404 (access by ID not found)
+            res = self.schema.dump(items.first_or_404()).data
 
         return res
 
@@ -122,6 +124,7 @@ class StockCategories(BaseCrud):
                          CategorySchema(many=True),
                          StockProductCategory.parent_id)
 
+    # @cache.cached(timeout=50)
     def get(self,  id=None):
         '''
         GET method to return all subCategorys of the given Category
