@@ -1,3 +1,4 @@
+# NOT USED
 from flask import render_template, request,\
                   url_for, session, redirect, flash, abort
 from flask_login import login_user, logout_user, login_required
@@ -85,10 +86,3 @@ def logout():
     logout_user()
     flash('Logged out successfully')
     return redirect(url_for('index'))
-
-
-@app.route('/catalogue')
-@login_required
-def catalogue():
-    "Catalogue page"
-    return render_template('cat.html', title='StockManager Catalogue')

@@ -1,65 +1,115 @@
-from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
-from flask_login import UserMixin
 import datetime
-from . import db
+from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import validates
+from flask_security import UserMixin, RoleMixin, SQLAlchemyUserDatastore
+
+
+db = SQLAlchemy()
+
+
+class BaseCrud():
+    '''
+    Base CRUD Enservices Entity class
+    it requires SQLAlchemy model, Marshmallow schema
+    '''
+    def add(self, entity):
+        '''
+        ADD entity from the model itself
+        '''
+        db.session.add(entity)
+        db.session.commit()
+
+    def update(self, schema, json):
+        '''
+        UPDATE the entity
+        '''
+        data, errors = schema.load(json,
+                                   instance=self,
+                                   session=db.session)
+
+        if not errors:
+            db.session.commit()
+
+        return data, errors
+
+    def delete(self, item):
+        '''
+        DELETE method to drop product
+        '''
+        db.session.delete(item)
+        db.session.commit()
+
+
+# https://pythonhosted.org/Flask-Security/quickstart.html
+# Association Table for Roles and Users
+roles_users = db.Table('roles_users',
+        db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+        db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
+
+
+class Role(db.Model, RoleMixin):
+    __tablename__ = 'role'
+
+    id          = db.Column(db.Integer(), primary_key=True)
+    name        = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+
+    def __repr__(self):
+        return '<models.Role[name=%s]>' % self.name
 
 
 class User(db.Model, UserMixin):
-    __tablename__ = "users"
+    __tablename__ = "user"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(64), nullable=False)
-    _password = db.Column(db.String(255), nullable=False)
-    api_key = db.Column(db.String(255), nullable=True, default='')
+    id               = db.Column(db.Integer, primary_key=True)
+    username         = db.Column(db.String(255), unique=True)
+    email            = db.Column(db.String(255), unique=True)
+    password         = db.Column(db.String(255))
+    first_name       = db.Column(db.String(255))
+    last_name        = db.Column(db.String(255))
+    active           = db.Column(db.Boolean())
+    # confirmed_at     = db.Column(db.DateTime())
+    last_login_at    = db.Column(db.DateTime())
+    current_login_at = db.Column(db.DateTime())
+    last_login_ip    = db.Column(db.String(255))
+    current_login_ip = db.Column(db.String(255))
+    login_count      = db.Column(db.Integer())
 
-    @property
-    def is_authenticated(self):
-        return True
-
-    @property
-    def is_active(self):
-        return True
-
-    @property
-    def is_anonymous(self):
-        return False
-
-    def get_id(self):
-        try:
-            return unicode(self.id)
-        except NameError:
-            return str(self.id)
-
-    def is_correct_password(self, plaintext):
-        self.__auth = (self._password == plaintext)
-        return self.__auth
-
-    @hybrid_property
-    def password(self):
-        return self._password
-
-    @password.setter
-    def __set_password(self, plaintext):
-        self._password = plaintext
-
-    @staticmethod
-    def get(id):
-        print('get user with id=', id)
-        user = User()
-        user.id = id
-        return user
+    roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
 
 
-class StockProductCategory(db.Model):
+    @validates('email')
+    def validate_email(self, key, address):
+        assert '@' in address
+        return address
+
+    def __repr__(self):
+        return '<models.User[username=%s]>' % self.username
+
+
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+
+
+# homeautomation models
+
+class StockProductCategory(db.Model, BaseCrud):
+    '''
+    Category model
+    '''
+
     __tablename__ = "cat_category"
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     parent_id = db.Column(db.Integer,  db.ForeignKey('cat_category.id'))
     name = db.Column(db.String(255), nullable=False)
     prio = db.Column(db.Integer, default=0)
-#    products = db.relationship("Products",  backref = "parent")
 
 
-class StockProductItem(db.Model):
+class StockProductItem(db.Model, BaseCrud):
+    '''
+    Product item model
+    '''
     __tablename__ = "cat_prod_item"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -80,7 +130,10 @@ class StockProductItem(db.Model):
     #     return False
 
 
-class StockProduct(db.Model):
+class StockProduct(db.Model, BaseCrud):
+    '''
+    Product model
+    '''
     __tablename__ = "cat_product"
 
     id = db.Column(db.Integer,

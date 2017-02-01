@@ -1,17 +1,44 @@
-from . import ma
-from .models import StockProductCategory, StockProduct,\
-                                  StockProductItem
 from marshmallow import fields, ValidationError
+from flask_marshmallow import Marshmallow
+
+from .models import User, Role, StockProductCategory, StockProduct,\
+                                  StockProductItem
+
+ma = Marshmallow()
 
 
 def must_not_be_blank(data):
     if not data:
         raise ValidationError('Data not provided')
 
+class UserSchema(ma.ModelSchema):
+    '''
+    User schema
+    '''
+    class Meta:
+        model = User
+
+    id = fields.Int(dump_only=True)
+    username = fields.Str()
+
+
+class RoleSchema(ma.ModelSchema):
+    '''
+    Role schema
+    '''
+    class Meta:
+        model = Role
+
+    # Validates for the different fields
+    id          = fields.Integer(dump_only=True)
+    name        = fields.String(validate=must_not_be_blank)
+    description = fields.String(validate=must_not_be_blank)
+
+
 
 class CategorySchema(ma.ModelSchema):
     '''
-    Stock product group SER/DE
+    Stock category SER/DE
     '''
     class Meta:
         model = StockProductCategory
@@ -30,7 +57,7 @@ class ProductSchema(ma.ModelSchema):
         model = StockProduct
 
     id = fields.Int(dump_only=True)
-    category_id = fields.Int(required=True,  validate=must_not_be_blank)
+    category_id = fields.Int(required=True, validate=must_not_be_blank)
     name = fields.Str(required=True)
     volume = fields.Str()
     sum_amounts = fields.Boolean()
