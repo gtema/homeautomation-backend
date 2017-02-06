@@ -69,6 +69,7 @@ class User(db.Model, UserMixin):
     first_name       = db.Column(db.String(255))
     last_name        = db.Column(db.String(255))
     active           = db.Column(db.Boolean())
+    api_key          = db.Column(db.String(255))
     # confirmed_at     = db.Column(db.DateTime())
     last_login_at    = db.Column(db.DateTime())
     current_login_at = db.Column(db.DateTime())

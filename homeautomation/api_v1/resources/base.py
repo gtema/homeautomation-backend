@@ -1,5 +1,6 @@
 from flask import request, jsonify, make_response, abort
 from flask_restful import Resource
+from homeautomation.mysecurity import auth_required
 
 class BaseResource(Resource):
     '''
@@ -7,6 +8,7 @@ class BaseResource(Resource):
     it requires SQLAlchemy model, Marshmallow schema and model qualifier
     (i.e. ID, PARENT_ID) to be set in the constructor
     '''
+    decorators = [auth_required()]
 
     def __init__(self,  model,  schema,  qualifier):
         '''

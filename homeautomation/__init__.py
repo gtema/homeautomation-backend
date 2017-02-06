@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_jwt import JWT
 from flask_security import Security
+from flask_cors import CORS
 from .authentication import *
 
 def create_app(config=None):
@@ -25,6 +26,10 @@ def create_app(config=None):
 
     # Initialize flask-security
     security = Security(app, user_datastore)
-    jwt      = JWT(app, authenticate, load_user)
+
+    from .mysecurity import MySecurity
+    jwt      = MySecurity(app, authenticate, load_user)
+
+    CORS(app)
 
     return app

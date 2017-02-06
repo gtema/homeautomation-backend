@@ -1,4 +1,3 @@
-from flask_cors import CORS
 from flask_restful import Api
 from flask import Blueprint, abort, jsonify
 from homeautomation.api_v1.resources.categories import StockCategories, StockCategory
@@ -10,7 +9,6 @@ api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
 
 api.init_app(api_bp)
-CORS(api_bp)
 
 @api_bp.route('/')
 def show():

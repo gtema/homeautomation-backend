@@ -12,7 +12,7 @@ class StockCategoryProducts(BaseResource):
     '''
     Api to return all subCategorys of the given Category (or root, parent_id=0)
     '''
-    decorators = [jwt_required()]
+    # decorators = [jwt_required()]
 
     def __init__(self):
         super().__init__(StockProduct,
@@ -36,7 +36,7 @@ class StockCategoryProduct(BaseResource):
     '''
     Api to process single Category by it's ID
     '''
-    decorators = [jwt_required()]
+    # decorators = [jwt_required()]
 
     def __init__(self):
         super().__init__(StockProduct, ProductSchema(), StockProduct.id)

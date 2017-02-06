@@ -12,7 +12,7 @@ class StockCategoryProductItems(BaseResource):
     '''
     Api to return all product items of the given product
     '''
-    decorators = [jwt_required()]
+    # decorators = [jwt_required()]
 
     def __init__(self):
         super().__init__(StockProductItem,
@@ -36,7 +36,7 @@ class StockCategoryProductItem(BaseResource):
     '''
     Api to provide access (add, delete, modify) to single product item
     '''
-    decorators = [jwt_required()]
+    # decorators = [jwt_required()]
 
     def __init__(self):
         super().__init__(StockProductItem,
