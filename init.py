@@ -8,11 +8,7 @@ from homeautomation import create_app
 from homeautomation.models import db, StockProductCategory, StockProduct,\
                                   StockProductItem, User, Role, roles_users, user_datastore
 
-class herokuConfig(object):
-    # Setup an in-memory SQLite DB, create schema
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
-
-app = create_app(herokuConfig)
+app = create_app()
 
 with app.app_context():
     db.drop_all()
@@ -49,9 +45,12 @@ with app.app_context():
     admin = user_datastore.find_or_create_role(name='Admin', description='API Administrator')
 
     # Create the default users
-    user_datastore.create_user(username='papa', email='test1@gmail.com', password=encrypt_password('apap'), first_name="Papa", last_name="Family", api_key="bla")
-    user_datastore.create_user(username='mama', email='test2@gmail.com', password=encrypt_password('amam'), first_name="Mama", last_name="Family")
-    user_datastore.create_user(username='child', email='test3@gmail.com', password=encrypt_password('dlihc'), first_name="Child", last_name="Family")
+    user_datastore.create_user(username='papa', email='test1@gmail.com', password=encrypt_password('apap'),
+            first_name="Papa", last_name="Family", api_key=os.urandom(24))
+    user_datastore.create_user(username='mama', email='test2@gmail.com', password=encrypt_password('amam'),
+            first_name="Mama", last_name="Family", api_key=os.urandom(24))
+    user_datastore.create_user(username='child', email='test3@gmail.com', password=encrypt_password('dlihc'),
+            first_name="Child", last_name="Family")
 
     papa = user_datastore.find_user(username='papa')
     mama = user_datastore.find_user(username='mama')
