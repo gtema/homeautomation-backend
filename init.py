@@ -7,7 +7,11 @@ from homeautomation import create_app
 from homeautomation.models import db, StockProductCategory, StockProduct,\
                                   StockProductItem, User, Role, roles_users, user_datastore
 
-app = create_app()
+class herokuConfig(object):
+    # Setup an in-memory SQLite DB, create schema
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+
+app = create_app(herokuConfig)
 
 with app.app_context():
     db.drop_all()
