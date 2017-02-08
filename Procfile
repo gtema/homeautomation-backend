@@ -1,1 +1,2 @@
-web: python run.py
+web: python run_heroku.py
+init: python init.py
