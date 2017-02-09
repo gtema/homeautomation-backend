@@ -18,6 +18,7 @@ with app.app_context():
     db.create_all()
     app.logger.info('Filling DB with test data')
 
+    app.logger.info('Filling DB with categories')
     with open('categories.csv') as f:
         # assume first line is header
         cf = csv.DictReader(f, delimiter=',')
@@ -31,6 +32,7 @@ with app.app_context():
                 )
             )
 
+    app.logger.info('Filling DB with products')
     with open('products.csv') as f:
         # assume first line is header
         cf = csv.DictReader(f, delimiter=',')
@@ -46,6 +48,7 @@ with app.app_context():
             )
 
     # Create the default roles
+    app.logger.info('Filling DB with users')
     basic = user_datastore.find_or_create_role(name='User', description="Basic user")
     admin = user_datastore.find_or_create_role(name='Admin', description='API Administrator')
 

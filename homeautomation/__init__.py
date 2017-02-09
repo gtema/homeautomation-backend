@@ -34,7 +34,7 @@ def create_app(config=None):
     security = Security(app, user_datastore)
 
     from .mysecurity import MySecurity
-    jwt      = MySecurity(app, authenticate, load_user)
+    jwt = MySecurity(app, authenticate, load_user)
 
     CORS(app)
 

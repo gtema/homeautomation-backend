@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 def authenticate(username=None, password=None, api_key=None):
     """Callback to search user using username and password OR api_key
     """
+    logger.debug('Trying to authenticate user name=%s, key=%s', user, api_key)
     if username is not None:
         try:
             user = user_datastore.find_user(username=username)
@@ -35,6 +36,7 @@ def authenticate(username=None, password=None, api_key=None):
 def load_user(id=None, api_key=None):
     """ Search the user using ID
     """
+    logger.debug('Checking user with id=%s, key=%s', id, api_key)
     user = None
     if api_key is not None:
         logger.debug("Getting user using api_key " + api_key)
