@@ -67,6 +67,8 @@ with app.app_context():
                     )
                 )
 
+        db.session.commit()
+
         app.logger.info('Filling DB with products')
         with open('products.csv') as f:
             # assume first line is header
