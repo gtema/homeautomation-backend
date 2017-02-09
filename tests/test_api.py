@@ -19,6 +19,7 @@ class testConfig(object):
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
     SECURITY_PASSWORD_HASH = 'plaintext'
     SECURITY_PASSWORD_SALT = '2'
+    JWT_AUTH_URL_RULE = '/auth'
     DEBUG = True
 
 
@@ -64,7 +65,7 @@ class ApiTestCase(unittest.TestCase):
         login method to issue a token request
         '''
         pass
-        self.auth = json.loads(self.test_client.post('/api/v0/auth',
+        self.auth = json.loads(self.test_client.post(self.app.config.get('JWT_AUTH_URL_RULE'),
                              data=json.dumps(dict(username='t1', password='plaintext')),
                              content_type='application/json').data)
 

@@ -2,6 +2,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import csv
 import os
+import random
+from base64 import b64encode
 
 from flask_security.utils import encrypt_password
 from homeautomation import create_app
@@ -11,8 +13,11 @@ from homeautomation.models import db, StockProductCategory, StockProduct,\
 app = create_app()
 
 with app.app_context():
+    app.logger.info('Recreating DB')
     db.drop_all()
     db.create_all()
+    app.logger.info('Filling DB with test data')
+
     with open('categories.csv') as f:
         # assume first line is header
         cf = csv.DictReader(f, delimiter=',')
@@ -46,9 +51,11 @@ with app.app_context():
 
     # Create the default users
     user_datastore.create_user(username='papa', email='test1@gmail.com', password=encrypt_password('apap'),
-            first_name="Papa", last_name="Family", api_key=os.urandom(24))
+        first_name="Papa", last_name="Family",
+        api_key=b64encode(os.urandom(48)).decode('ascii'))
     user_datastore.create_user(username='mama', email='test2@gmail.com', password=encrypt_password('amam'),
-            first_name="Mama", last_name="Family", api_key=os.urandom(24))
+            first_name="Mama", last_name="Family",
+            api_key=b64encode(os.urandom(48)).decode('ascii'))
     user_datastore.create_user(username='child', email='test3@gmail.com', password=encrypt_password('dlihc'),
             first_name="Child", last_name="Family")
 
