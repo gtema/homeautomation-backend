@@ -1,4 +1,5 @@
 Id,Parent_id,Name,Prio
+0,,Root,1
 1,0,Lebensmittel,1
 2,1,Milchprodukte & Eier,1
 3,2,Milch,1

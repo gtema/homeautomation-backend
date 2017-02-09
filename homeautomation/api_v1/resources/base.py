@@ -33,7 +33,7 @@ class BaseResource(Resource):
         if (id is not None):
             items = self.model.query.filter(self.qualifier == id)
         else:
-            items = self.model.query.all()
+            items = self.model.query.filter(self.qualifier != None).all()
 
         if self.schema.many:
             # multiple items

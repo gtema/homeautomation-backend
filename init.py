@@ -58,10 +58,11 @@ with app.app_context():
             # assume first line is header
             cf = csv.DictReader(f, delimiter=',')
             for row in cf:
+                parent_id = row.get('Parent_id')
                 db.session.add(
                     StockProductCategory(
-                        id=row.get('Id'),
-                        parent_id=row.get('Parent_id'),
+                        id=int(row.get('Id')),
+                        parent_id=int(parent_id) if parent_id != '' else None,
                         name=row.get('Name'),
                         prio=row.get('Prio')
                     )
@@ -76,8 +77,8 @@ with app.app_context():
             for row in cf:
                 db.session.add(
                     StockProduct(
-                        id=row.get('Id'),
-                        category_id=row.get('Category_id'),
+                        id=int(row.get('Id')),
+                        category_id=int(row.get('Category_id')),
                         name=row.get('Name'),
                         volume=row.get('Volume'),
                         sum_amounts=row.get('Sum_amounts')
