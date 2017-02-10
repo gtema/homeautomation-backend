@@ -1,9 +1,8 @@
-from flask import Flask
-from flask_jwt import JWT
+import os
+from flask import Flask, request
 from flask_security import Security
 from flask_cors import CORS
-from .authentication import *
-import os
+
 
 def create_app(config=None):
     """
@@ -34,7 +33,9 @@ def create_app(config=None):
     security = Security(app, user_datastore)
 
     from .mysecurity import MySecurity
-    jwt = MySecurity(app, authenticate, load_user)
+    from .authentication import authenticate, post_login
+    
+    sec = MySecurity(app=app, auth_callback=authenticate, post_login_callback=post_login)
 
     CORS(app)
 

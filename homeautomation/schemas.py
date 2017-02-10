@@ -35,7 +35,6 @@ class RoleSchema(ma.ModelSchema):
     description = fields.String(validate=must_not_be_blank)
 
 
-
 class CategorySchema(ma.ModelSchema):
     '''
     Stock category SER/DE

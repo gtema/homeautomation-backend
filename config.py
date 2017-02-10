@@ -11,9 +11,7 @@ class Config(object):
     DEBUG = True
     SQLALCHEMY_ECHO = False
     SECRET_KEY = 'aVfBgth%w2d&eh!.'
-    JWT_AUTH_URL_RULE              = '/auth'
-    JWT_AUTH_USERNAME_KEY          = 'username'
-    JWT_AUTH_PASSWORD_KEY          = 'password'
+
     SECURITY_CONFIRMABLE           = True
     SECURITY_TRACKABLE             = True
     SECURITY_REGISTERABLE          = True

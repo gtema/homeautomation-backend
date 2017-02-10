@@ -1,10 +1,11 @@
 import unittest
 import os
 from flask import json
+from flask_security.utils import encrypt_password
 
 from homeautomation.models import user_datastore, User, StockProductCategory, StockProductItem, StockProduct
-from homeautomation import create_app, db
-from flask_security.utils import encrypt_password
+from homeautomation import create_app
+from homeautomation.models import db
 
 
 """Api tests
@@ -19,7 +20,7 @@ class testConfig(object):
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
     SECURITY_PASSWORD_HASH = 'plaintext'
     SECURITY_PASSWORD_SALT = '2'
-    JWT_AUTH_URL_RULE = '/auth'
+    SEC_AUTH_URL_RULE = '/auth'
     DEBUG = True
 
 
@@ -36,7 +37,7 @@ class ApiTestCase(unittest.TestCase):
         with cls.app.app_context():
             db.drop_all()
             db.create_all()
-            user_datastore.create_user(username='t1', password=encrypt_password('plaintext'))
+            user_datastore.create_user(username='t1', password=encrypt_password('plaintext'), api_key='adglhve')
             db.session.commit()
 
     def setUp(self):
@@ -65,7 +66,7 @@ class ApiTestCase(unittest.TestCase):
         login method to issue a token request
         '''
         pass
-        self.auth = json.loads(self.test_client.post(self.app.config.get('JWT_AUTH_URL_RULE'),
+        self.auth = json.loads(self.test_client.post(self.app.config.get('SEC_AUTH_URL_RULE'),
                              data=json.dumps(dict(username='t1', password='plaintext')),
                              content_type='application/json').data)
 
@@ -104,7 +105,7 @@ class ApiTestCase(unittest.TestCase):
         rv = self.test_client.post(API_URL_PREFIX + "/" + type,
                            data=json.dumps(entity),
                            content_type='application/json',
-                           headers=dict(Authorization='JWT ' + self.auth['access_token'])
+                           headers=dict(Authorization='API_KEY ' + self.auth['api_key'])
                            )
         ret = json.loads(rv.data)
 
@@ -117,7 +118,7 @@ class ApiTestCase(unittest.TestCase):
         '''
         id_selector = "/" + repr(id) #if id else ''
         rv = self.test_client.delete(API_URL_PREFIX + "/" + type + id_selector,
-                             headers=dict(Authorization='JWT '+self.auth['access_token'])
+                             headers=dict(Authorization='API_KEY '+self.auth['api_key'])
                              )
         assert expected_rc == rv.status_code
         return {'status' : rv.status_code, 'obj' : None}
@@ -129,7 +130,7 @@ class ApiTestCase(unittest.TestCase):
         rv = self.test_client.put(API_URL_PREFIX + "/" + type + "/" + repr(original_id),
                 data=json.dumps(entity),
                 content_type = 'application/json',
-                headers=dict(Authorization='JWT '+self.auth['access_token'])
+                headers=dict(Authorization='API_KEY '+self.auth['api_key'])
                 )
         ret = json.loads(rv.data)
         assert expected_rc == rv.status_code
@@ -141,7 +142,7 @@ class ApiTestCase(unittest.TestCase):
         '''
         id_selector = "/" + repr(id) if id else ''
         rv = self.test_client.get(API_URL_PREFIX + "/" + type + id_selector,
-                headers=dict(Authorization='JWT '+self.auth['access_token'])
+                headers=dict(Authorization='API_KEY '+self.auth['api_key'])
                 )
         ret = json.loads(rv.data)
         assert expected_rc == rv.status_code

@@ -2,7 +2,8 @@ import unittest
 import os
 from flask import json
 
-from homeautomation import create_app, db
+from homeautomation import create_app
+from homeautomation.models import db
 
 
 class testConfig(object):
