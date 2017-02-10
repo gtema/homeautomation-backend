@@ -1,4 +1,4 @@
-FROM python:3.5-alpine
+FROM python:3.6-alpine
 
 MAINTAINER Artem Goncharov
 
@@ -8,9 +8,6 @@ ADD . /code
 
 WORKDIR /code
 
-
-RUN pip install -r requirements.txt
-
-#ENTRYPOINT ["python"]
+RUN pip install -r requirements_nopg.txt
 
 CMD ["python", "run.py"]
