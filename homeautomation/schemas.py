@@ -11,6 +11,7 @@ def must_not_be_blank(data):
     if not data:
         raise ValidationError('Data not provided')
 
+
 class UserSchema(ma.ModelSchema):
     '''
     User schema
@@ -30,8 +31,8 @@ class RoleSchema(ma.ModelSchema):
         model = Role
 
     # Validates for the different fields
-    id          = fields.Integer(dump_only=True)
-    name        = fields.String(validate=must_not_be_blank)
+    id = fields.Integer(dump_only=True)
+    name = fields.String(validate=must_not_be_blank)
     description = fields.String(validate=must_not_be_blank)
 
 

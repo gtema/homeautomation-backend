@@ -1,6 +1,7 @@
-from flask import request, jsonify, make_response, abort
+from flask import request, jsonify, make_response
 from flask_restful import Resource
 from homeautomation.mysecurity import auth_required
+
 
 class BaseResource(Resource):
     '''
@@ -18,7 +19,7 @@ class BaseResource(Resource):
         self.model = model
         self.qualifier = qualifier
 
-    def get(self, id = 0):
+    def get(self, id=0):
         '''
         GET method to get JSON representation of items by qualifier
         '''
@@ -33,7 +34,7 @@ class BaseResource(Resource):
         if (id is not None):
             items = self.model.query.filter(self.qualifier == id)
         else:
-            items = self.model.query.filter(self.qualifier != None).all()
+            items = self.model.query.filter(self.qualifier.isnot(None)).all()
 
         if self.schema.many:
             # multiple items
@@ -62,7 +63,8 @@ class BaseResource(Resource):
         # Find the item first
         item = self.model.query.filter(self.qualifier == id).first_or_404()
 
-        # invoke base update method, passing schema and json. They are used to load entity (schema.load)
+        # invoke base update method, passing schema and json.
+        # They are used to load entity (schema.load)
         data, errors = item.update(self.schema, json)
 
         if errors:

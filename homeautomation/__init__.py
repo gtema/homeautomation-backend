@@ -34,8 +34,9 @@ def create_app(config=None):
 
     from .mysecurity import MySecurity
     from .authentication import authenticate, post_login
-    
-    sec = MySecurity(app=app, auth_callback=authenticate, post_login_callback=post_login)
+
+    sec = MySecurity(app=app, auth_callback=authenticate,
+                     post_login_callback=post_login)
 
     CORS(app)
 

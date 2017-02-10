@@ -1,8 +1,6 @@
-from flask import  jsonify, make_response, abort
-from flask_restful import Resource
-from flask_jwt import jwt_required
+from flask import jsonify, make_response, abort
 
-from homeautomation.models import StockProductItem
+from homeautomation.models import db, StockProductItem
 from homeautomation.schemas import ProductItemSchema
 
 from .base import BaseResource

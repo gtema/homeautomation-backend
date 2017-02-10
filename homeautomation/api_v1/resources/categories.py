@@ -1,6 +1,4 @@
-from flask import jsonify, make_response, abort
-from flask_restful import Resource
-from flask_jwt import jwt_required
+from flask import abort
 
 from homeautomation.models import StockProductCategory
 from homeautomation.schemas import CategorySchema

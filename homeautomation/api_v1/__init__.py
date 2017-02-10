@@ -1,14 +1,18 @@
 from flask_restful import Api
-from flask import Blueprint, abort, jsonify
-from homeautomation.api_v1.resources.categories import StockCategories, StockCategory
-from homeautomation.api_v1.resources.products import StockCategoryProducts, StockCategoryProduct
-from homeautomation.api_v1.resources.productitems import StockCategoryProductItems, StockCategoryProductItem
+from flask import Blueprint
+from homeautomation.api_v1.resources.categories import StockCategories,\
+             StockCategory
+from homeautomation.api_v1.resources.products import StockCategoryProducts,\
+            StockCategoryProduct
+from homeautomation.api_v1.resources.productitems import \
+            StockCategoryProductItems, StockCategoryProductItem
 
 
 api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
 
 api.init_app(api_bp)
+
 
 @api_bp.route('/')
 def show():
