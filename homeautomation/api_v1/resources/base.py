@@ -1,5 +1,7 @@
 from flask import request, jsonify, make_response
 from flask_restful import Resource
+from sqlalchemy.exc import DatabaseError
+
 from homeautomation.mysecurity import auth_required
 
 
@@ -30,19 +32,24 @@ class BaseResource(Resource):
         #              'message': 'Product GET without ID is not allowed'
         #             }),
         #             422)
+        try:
 
-        if (id is not None):
-            items = self.model.query.filter(self.qualifier == id)
-        else:
-            items = self.model.query.filter(self.qualifier.isnot(None)).all()
+            if (id is not None):
+                items = self.model.query.filter(self.qualifier == id)
+            else:
+                items = self.model.query.filter(self.qualifier.isnot(None)).all()
 
-        if self.schema.many:
-            # multiple items
-            res = self.schema.dump(items).data
-        else:
-            # single item
-            # if nothing found return 404 (access by ID not found)
-            res = self.schema.dump(items.first_or_404()).data
+            if self.schema.many:
+                # multiple items
+                res = self.schema.dump(items).data
+            else:
+                # single item
+                # if nothing found return 404 (access by ID not found)
+                res = self.schema.dump(items.first_or_404()).data
+        except DatabaseError as e:
+            res = make_response(
+                        jsonify({'Internal Exception': str(e)}),
+                        500)
 
         return res
 
@@ -60,17 +67,22 @@ class BaseResource(Resource):
                         jsonify({'message': 'ID is missing or wrong'}),
                         400)
 
-        # Find the item first
-        item = self.model.query.filter(self.qualifier == id).first_or_404()
+        try:
+            # Find the item first
+            item = self.model.query.filter(self.qualifier == id).first_or_404()
 
-        # invoke base update method, passing schema and json.
-        # They are used to load entity (schema.load)
-        data, errors = item.update(self.schema, json)
+            # invoke base update method, passing schema and json.
+            # They are used to load entity (schema.load)
+            data, errors = item.update(self.schema, json)
 
-        if errors:
-            return make_response(jsonify(errors),  422)
-        else:
-            return self.schema.dump(item).data
+            if errors:
+                return make_response(jsonify(errors),  422)
+            else:
+                return self.schema.dump(item).data
+        except DatabaseError as e:
+            return make_response(
+                        jsonify({'Internal Exception during updating entity': str(e)}),
+                        500)
 
     def post(self):
         '''
@@ -85,9 +97,14 @@ class BaseResource(Resource):
         if errors:
             return make_response(jsonify(errors),  422)
 
-        item.add(item)
+        try:
+            item.add(item)
 
-        return make_response(self.schema.jsonify(item), 201)
+            return make_response(self.schema.jsonify(item), 201)
+        except DatabaseError as e:
+            return make_response(
+                        jsonify({'Internal Exception during creating new entity': str(e)}),
+                        500)
 
     def delete(self, id=0):
         '''
@@ -101,7 +118,12 @@ class BaseResource(Resource):
         # if id == 0:
         #     return make_response(jsonify({'message': 'Id not given'}), 422)
 
-        item = self.model.query.filter(self.model.id == id).first_or_404()
+        try:
+            item = self.model.query.filter(self.model.id == id).first_or_404()
 
-        item.delete(item)
-        return make_response('', 204)
+            item.delete(item)
+            return make_response('', 204)
+        except DatabaseError as e:
+            return make_response(
+                        jsonify({'Internal Exception during creating new entity': str(e)}),
+                        500)

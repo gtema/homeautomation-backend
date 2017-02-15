@@ -5,6 +5,7 @@
 import logging
 
 from .models import user_datastore, db
+# from sqlalchemy.exc import DatabaseError
 from flask_security.utils import verify_password, login_user
 
 
@@ -21,12 +22,12 @@ def authenticate(username=None, password=None, api_key=None):
     if api_key is not None:
         try:
             user = user_datastore.find_user(api_key=api_key)
-        except KeyError:
+        except:
             return None
     if username is not None:
         try:
             user = user_datastore.find_user(username=username)
-        except KeyError:
+        except:
             return None
         # verify user
         if user and username == user.username and \
@@ -42,5 +43,8 @@ def post_login(identity):
     :param identity: found user
     """
     if identity is not None:
-        login_user(identity, True)
-        db.session.commit()
+        try:
+            login_user(identity, True)
+            db.session.commit()
+        except:
+            return None

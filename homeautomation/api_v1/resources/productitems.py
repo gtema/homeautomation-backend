@@ -61,19 +61,25 @@ class StockCategoryProductItem(BaseResource):
         DELETE method to mark item as consumed
         no ID is expected. Entity, marked as started, will be "consumed"
         '''
-        if id:
-            item = self.model.query.filter(self.model.id == id).first_or_404()
-        else:
-            item = self.model.query.filter(StockProductItem.is_started).first()
-            if not item:
-                return make_response(
-                                jsonify({
-                                 'message': 'No started entity found'
-                                }),
-                                422)
+        try:
+            if id:
+                item = self.model.query.filter(self.model.id == id).first_or_404()
+            else:
+                item = self.model.query.filter(StockProductItem.is_started).first()
+                if not item:
+                    return make_response(
+                                    jsonify({
+                                     'message': 'No started entity found'
+                                    }),
+                                    422)
 
-        if item:
-            db.session.delete(item)
-            db.session.commit()
+            if item:
+                db.session.delete(item)
+                db.session.commit()
 
-        return make_response('', 204)
+            return make_response('', 204)
+            
+        except DatabaseError as e:
+            res = make_response(
+                        jsonify({'Internal Exception during product item deletion': str(e)}),
+                        500)
