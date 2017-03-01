@@ -1,0 +1,25 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class=page>
+    <h1>StockManager</h1>
+{% if current_user.is_authenticated %}
+    Hi {{ current_user.username }}!!!
+{% endif %}
+<div class=metanav>
+{% if not current_user.is_authenticated %}
+<a href="{{ url_for('login') }}">log in</a>
+{% else %}
+<a href="{{ url_for('logout') }}">log out</a>
+{% endif %}
+</div>
+
+{% for message in get_flashed_messages() %}
+    <div class=flash>{{ message }}</div>
+{% endfor %}
+
+
+</div>
+
+{% endblock %}
