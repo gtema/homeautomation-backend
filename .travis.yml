@@ -1,4 +1,7 @@
 language: python
+# cache pip deps
+cache: pip
+# build matrix
 python:
   - "3.5"
   - "3.6"

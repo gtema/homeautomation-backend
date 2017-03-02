@@ -1,4 +1,4 @@
-# README #
+# README # [![Build Status](https://travis-ci.org/gtema/homeautomation-backend.svg?branch=master)](https://travis-ci.org/gtema/homeautomation-backend)
 
 My HomeAutomation project [HomeAutomation project](https://github.org/gtema/homeautomation) is an attempt to optimize some of the household activities and their efficiency. One of the most noticable examples for that is to keep track of groceries and household products to avoid their disposal or sudden lack. Sometimes you come from the shop and figure out that you have already few packages of flour. On the other hand you start coocking and figure out, that you have no milk. In order to solve this problem and potentially some others this project was created.
 
