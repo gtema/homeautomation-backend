@@ -44,8 +44,15 @@ class BaseCrud():
 # https://pythonhosted.org/Flask-Security/quickstart.html
 # Association Table for Roles and Users
 roles_users = db.Table('roles_users',
-                    db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
-                    db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
+                       db.Column('user_id',
+                                 db.Integer(),
+                                 db.ForeignKey('user.id')
+                                 ),
+                       db.Column('role_id',
+                                 db.Integer(),
+                                 db.ForeignKey('role.id')
+                                 )
+                       )
 
 
 class Role(db.Model, RoleMixin):
@@ -102,7 +109,8 @@ class StockProductCategory(db.Model, BaseCrud):
     __tablename__ = "cat_category"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    parent_id = db.Column(db.Integer,  db.ForeignKey('cat_category.id'))
+    parent_id = db.Column(db.Integer, db.ForeignKey('cat_category.id',
+                                                    ondelete='CASCADE'))
     name = db.Column(db.String(255), nullable=False)
     prio = db.Column(db.Integer, default=0)
 
@@ -115,7 +123,9 @@ class StockProductItem(db.Model, BaseCrud):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     product_id = db.Column(db.Integer,
-                           db.ForeignKey('cat_product.id'),
+                           db.ForeignKey('cat_product.id',
+                                         ondelete='CASCADE',
+                                         onupdate='CASCADE'),
                            nullable=False)
     amount = db.Column(db.Integer, default=1)
     is_started = db.Column(db.Boolean, default=False)

@@ -1,5 +1,6 @@
 import os
-from flask import Flask, request
+import logging
+from flask import Flask
 from flask_security import Security
 from flask_cors import CORS
 
@@ -20,6 +21,8 @@ def create_app(config=None):
     # Read config given as a parameter
     if config is not None:
         app.config.from_object(config)
+
+    app.logger.setLevel(logging.INFO)
 
     # Initialize Database
     from homeautomation.models import db, user_datastore

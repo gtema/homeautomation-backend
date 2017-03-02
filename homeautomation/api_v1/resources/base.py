@@ -6,26 +6,25 @@ from homeautomation.mysecurity import auth_required
 
 
 class BaseResource(Resource):
-    '''
+    """
     Base CRUD services class
     it requires SQLAlchemy model, Marshmallow schema and model qualifier
     (i.e. ID, PARENT_ID) to be set in the constructor
-    '''
+    """
     decorators = [auth_required()]
 
     def __init__(self,  model,  schema,  qualifier):
-        '''
+        """
         Constructor, setting model, schema and filter qualifier
-        '''
+        """
         self.schema = schema
         self.model = model
         self.qualifier = qualifier
 
     def get(self, id=0):
-        '''
+        """
         GET method to get JSON representation of items by qualifier
-        '''
-
+        """
         # if id == -1:
         #     return make_response(
         #             jsonify({
@@ -37,7 +36,8 @@ class BaseResource(Resource):
             if (id is not None):
                 items = self.model.query.filter(self.qualifier == id)
             else:
-                items = self.model.query.filter(self.qualifier.isnot(None)).all()
+                items = self.model.query.filter(self.qualifier.isnot(None)).\
+                                                                    all()
 
             if self.schema.many:
                 # multiple items
@@ -54,9 +54,9 @@ class BaseResource(Resource):
         return res
 
     def put(self, id=0):
-        '''
+        """
         PUT method to modify existing item
-        '''
+        """
         json = request.get_json()
 
         if not json:
@@ -81,13 +81,15 @@ class BaseResource(Resource):
                 return self.schema.dump(item).data
         except DatabaseError as e:
             return make_response(
-                        jsonify({'Internal Exception during updating entity': str(e)}),
+                        jsonify({'Internal Exception during updating entity':
+                                str(e)}
+                                ),
                         500)
 
     def post(self):
-        '''
+        """
         POST method to add a new item
-        '''
+        """
         json = request.get_json()
 
         if not json:
@@ -107,10 +109,10 @@ class BaseResource(Resource):
                         500)
 
     def delete(self, id=0):
-        '''
+        """
         DELETE method to drop product
         delete without id will return 405
-        '''
+        """
         if id == 0:
             return make_response(jsonify({
                           'message': 'Entity DELETE without ID is not allowed'

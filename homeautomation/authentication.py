@@ -1,23 +1,13 @@
-###########################################################################
-# JWT Functions for Authenticating Users via API
-###########################################################################
-
-import logging
-
 from .models import user_datastore, db
-# from sqlalchemy.exc import DatabaseError
+from flask import current_app
 from flask_security.utils import verify_password, login_user
-
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 def authenticate(username=None, password=None, api_key=None):
     """Callback to search user using username and password OR api_key
     """
-    logger.debug('Trying to authenticate user name=%s, key=%s',
-                 username, api_key)
+    current_app.logger.debug('Trying to authenticate user name=%s, key=%s',
+                             username, api_key)
     user = None
     if api_key is not None:
         try:

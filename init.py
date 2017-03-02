@@ -21,18 +21,29 @@ with app.app_context():
     # Create the default roles
     app.logger.info('Filling DB with users')
     try:
-        basic = user_datastore.find_or_create_role(name='User', description="Basic user")
-        admin = user_datastore.find_or_create_role(name='Admin', description='API Administrator')
+        basic = user_datastore.find_or_create_role(name='User',
+                                                   description="Basic user")
+        admin = user_datastore.find_or_create_role(name='Admin',
+                                                   description='API Administrator')
 
         # Create the default users
-        user_datastore.create_user(username='papa', email='test1@gmail.com', password=encrypt_password('apap'),
-            first_name="Papa", last_name="Family",
-            api_key=b64encode(os.urandom(48)).decode('ascii'))
-        user_datastore.create_user(username='mama', email='test2@gmail.com', password=encrypt_password('amam'),
-                first_name="Mama", last_name="Family",
-                api_key=b64encode(os.urandom(48)).decode('ascii'))
-        user_datastore.create_user(username='child', email='test3@gmail.com', password=encrypt_password('dlihc'),
-                first_name="Child", last_name="Family")
+        user_datastore.create_user(username='papa',
+                                   email='test1@gmail.com',
+                                   password=encrypt_password('apap'),
+                                   first_name="Papa",
+                                   last_name="Family",
+                                   api_key=b64encode(os.urandom(48)).decode('ascii'))
+        user_datastore.create_user(username='mama',
+                                   email='test2@gmail.com',
+                                   password=encrypt_password('amam'),
+                                   first_name="Mama",
+                                   last_name="Family",
+                                   api_key=b64encode(os.urandom(48)).decode('ascii'))
+        user_datastore.create_user(username='child',
+                                   email='test3@gmail.com',
+                                   password=encrypt_password('dlihc'),
+                                   first_name="Child",
+                                   last_name="Family")
 
         papa = user_datastore.find_user(username='papa')
         mama = user_datastore.find_user(username='mama')
@@ -49,7 +60,8 @@ with app.app_context():
         # Save users
         db.session.commit()
     except:
-        app.logger.exception('Exception occured during installing users', sys.exc_info()[0])
+        app.logger.exception('Exception occured during installing users',
+                             sys.exc_info()[0])
         raise
 
     try:
@@ -86,5 +98,6 @@ with app.app_context():
                 )
         db.session.commit()
     except:
-        app.logger.exception('Exception occured during installing data', sys.exc_info()[0])
+        app.logger.exception('Exception occured during installing data',
+                             sys.exc_info()[0])
         raise

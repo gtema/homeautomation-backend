@@ -34,10 +34,12 @@ Heavy development stage, therefore just 0.0.3
 #### Configuration
 
 Api configuration is present under the backend/{config.py,instance/config.py}
-Node requires REACT_APP_API_HOST environment variable to point to the API (default 127.0.0.1:5000), REACT_APP_API_PATH and REACT_API_AUTH_PATH
+`APP_SETTINGS` variable allows to choose from different preconfigured setups (see config.py for details):
+- *config.HerokuConfig* - deploy to Heroku. Will respect DATABASE_URL variable for the db configuration
+- *config.Travis* - configuration for the Travis CI
+- *config.Local* - default confiuration object
 
-For deployment on Heroku set the APP_SETTINGS=config.HerokuConfig in the app config variables. Then the DATABASE_URL variable will be respected and used as a DB
-
+Apart of that variable FLASKR_SETTINGS can contain file name with the configuration to override defaults
 
 #### Dependencies
 
@@ -52,7 +54,7 @@ Up to now a local SQLite DB is used (app.SQLite) for development purposes. Repo 
 
 - CLI tests (curl of API). Do not forget your auth
   - `curl "http://localhost:5000/api/v0/stock/product" -H 'Content-Type: application/json' -X POST -d '{"name":"t11","category_id":7}' -v`
-  - `curl "http://localhost:5000/api/v0/stock/products_by_category_id/4"``
+  - `curl "http://localhost:5000/api/v0/stock/products_by_category_id/4"`
   - `curl "http://localhost:5000/api/v0/stock/product/12" -H 'Content-Type: application/json' -X PUT -d '{"name":"t11","category_id":1,"id":12}' -v`
   - `curl "http://localhost:5000/api/v0/stock/product/12" -H 'Content-Type: application/json' -X DELETE`
 - python tests
