@@ -47,10 +47,10 @@ class StockCategoryProduct(BaseResource):
         current_app.logger.debug('GET product %s' % (repr(id)))
         if id == 0:
             return make_response(
-                    jsonify({
-                     'message': 'Product GET without ID is not allowed'
-                    }),
-                    422)
+                jsonify({
+                    'message': 'Product GET without ID is not allowed'
+                }),
+                422)
         else:
             return super().get(id)
 
@@ -74,3 +74,13 @@ class StockCategoryProduct(BaseResource):
         """
         current_app.logger.debug('DELETE product %s' % (repr(id)))
         return super().delete(id)
+
+# url, resource, endpoint, description
+endpoints = (
+    ('/stock/products_by_category_id/<int:id>', StockCategoryProducts,
+     'products_by_category', '[GET] all products of a given category'),
+    ('/stock/product/<int:id>', StockCategoryProduct,
+     'product_by_id', '[GET, PUT, DELETE] individual product'),
+    ('/stock/product', StockCategoryProduct,
+     'add_product', '[POST] add a new product')
+)

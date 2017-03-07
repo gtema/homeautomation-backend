@@ -70,16 +70,16 @@ class StockCategoryProductItem(BaseResource):
         try:
             if id:
                 item = self.model.query.filter(self.model.id == id).\
-                            first_or_404()
+                    first_or_404()
             else:
                 item = self.model.query.filter(StockProductItem.is_started).\
-                            first()
+                    first()
                 if not item:
                     return make_response(
-                                    jsonify({
-                                     'message': 'No started entity found'
-                                    }),
-                                    422)
+                        jsonify({
+                            'message': 'No started entity found'
+                        }),
+                        422)
 
             if item:
                 db.session.delete(item)
@@ -89,6 +89,17 @@ class StockCategoryProductItem(BaseResource):
 
         except DatabaseError as e:
             return make_response(
-                        jsonify({'Internal Exception during product '
-                                 'item deletion': str(e)}),
-                        500)
+                jsonify({'Internal Exception during product '
+                         'item deletion': str(e)}),
+                500)
+
+
+# url, resource, endpoint, description
+endpoints = (
+    ('/stock/product_items_by_product_id/<int:id>', StockCategoryProductItems,
+     'product_items_by_product', '[GET] product items by product id'),
+    ('/stock/product_item/<int:id>', StockCategoryProductItem,
+     'alter_product_item', '[GET, PUT, DELETE] individual product item'),
+    ('/stock/product_item', StockCategoryProductItem,
+     'add_product_item', '[POST] new product item')
+)

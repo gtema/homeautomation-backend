@@ -4,7 +4,7 @@ from flask import json
 from flask_security.utils import encrypt_password
 
 from homeautomation.models import user_datastore,\
-        StockProductCategory, StockProductItem, StockProduct
+    StockProductCategory, StockProductItem, StockProduct
 from homeautomation import create_app
 from homeautomation.models import db
 
@@ -77,29 +77,29 @@ class ApiTestCase(unittest.TestCase):
         login method to issue a token request
         """
         self.auth = json.loads(self.test_client.post(
-                                self.app.config.get('SEC_LOGIN_URL'),
-                                data=json.dumps(
-                                    dict(username='t1', password='plaintext')),
-                               content_type='application/json').data)
+            self.app.config.get('SEC_LOGIN_URL'),
+            data=json.dumps(
+                dict(username='t1', password='plaintext')),
+            content_type='application/json').data)
 
     def buildRequestHeader(self):
         return dict(Authorization='API_KEY ' + self.auth['api_key'])
 
     category1 = dict(
-            name='root1',
-            parent_id=0,
-            prio=0
-            )
+        name='root1',
+        parent_id=0,
+        prio=0
+    )
 
     category2 = dict(
-            name='root2',
-            parent_id=0,
-            prio=0
-            )
+        name='root2',
+        parent_id=0,
+        prio=0
+    )
 
     product1 = dict(
         name='tp1'
-        )
+    )
 
     def __check_success(self, src, target):
         """
@@ -291,7 +291,7 @@ class ApiTestCase(unittest.TestCase):
             product_id=self.product1['id'],
             amount=2,
             is_started=True
-            )
+        )
 
         'add product_item'
         ret = self.__add_entity('product_item', product_item)

@@ -74,3 +74,15 @@ class StockCategory(BaseResource):
         """
         current_app.logger.debug('DELETE category %d' % (id))
         return super().delete(id)
+
+# url, resource, endpoint, description
+endpoints = (
+    ('/stock/categories', StockCategories,
+     'categories_default', '[GET] Get all product categories'),
+    ('/stock/categories_by_category_id/<int:id>', StockCategories,
+     'category_by_category_id', '[GET] Get categories by parent category id'),
+    ('/stock/category/<int:id>', StockCategory,
+     'category_by_id', '[GET, PUT, DELETE] Individual category by id'),
+    ('/stock/category', StockCategory,
+     'add_category', '[POST] add new category')
+)

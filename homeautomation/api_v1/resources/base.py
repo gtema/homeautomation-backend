@@ -13,7 +13,7 @@ class BaseResource(Resource):
     """
     decorators = [auth_required()]
 
-    def __init__(self,  model,  schema,  qualifier):
+    def __init__(self, model, schema, qualifier):
         """
         Constructor, setting model, schema and filter qualifier
         """
@@ -37,7 +37,7 @@ class BaseResource(Resource):
                 items = self.model.query.filter(self.qualifier == id)
             else:
                 items = self.model.query.filter(self.qualifier.isnot(None)).\
-                                                                    all()
+                    all()
 
             if self.schema.many:
                 # multiple items
@@ -48,8 +48,8 @@ class BaseResource(Resource):
                 res = self.schema.dump(items.first_or_404()).data
         except DatabaseError as e:
             res = make_response(
-                        jsonify({'Internal Exception': str(e)}),
-                        500)
+                jsonify({'Internal Exception': str(e)}),
+                500)
 
         return res
 
@@ -64,8 +64,8 @@ class BaseResource(Resource):
 
         if id == 0:
             return make_response(
-                        jsonify({'message': 'ID is missing or wrong'}),
-                        400)
+                jsonify({'message': 'ID is missing or wrong'}),
+                400)
 
         try:
             # Find the item first
@@ -76,15 +76,15 @@ class BaseResource(Resource):
             data, errors = item.update(self.schema, json)
 
             if errors:
-                return make_response(jsonify(errors),  422)
+                return make_response(jsonify(errors), 422)
             else:
                 return self.schema.dump(item).data
         except DatabaseError as e:
             return make_response(
-                        jsonify({'Internal Exception during updating entity':
-                                str(e)}
-                                ),
-                        500)
+                jsonify({'Internal Exception during updating entity':
+                        str(e)}
+                        ),
+                500)
 
     def post(self):
         """
@@ -97,7 +97,7 @@ class BaseResource(Resource):
 
         item, errors = self.schema.load(json)
         if errors:
-            return make_response(jsonify(errors),  422)
+            return make_response(jsonify(errors), 422)
 
         try:
             item.add(item)
@@ -105,8 +105,10 @@ class BaseResource(Resource):
             return make_response(self.schema.jsonify(item), 201)
         except DatabaseError as e:
             return make_response(
-                        jsonify({'Internal Exception during creating new entity': str(e)}),
-                        500)
+                jsonify({
+                    'Internal Exception during creating new entity': str(e)
+                }),
+                500)
 
     def delete(self, id=0):
         """
@@ -115,8 +117,8 @@ class BaseResource(Resource):
         """
         if id == 0:
             return make_response(jsonify({
-                          'message': 'Entity DELETE without ID is not allowed'
-                        }), 405)
+                'message': 'Entity DELETE without ID is not allowed'
+            }), 405)
         # if id == 0:
         #     return make_response(jsonify({'message': 'Id not given'}), 422)
 
@@ -127,5 +129,7 @@ class BaseResource(Resource):
             return make_response('', 204)
         except DatabaseError as e:
             return make_response(
-                        jsonify({'Internal Exception during creating new entity': str(e)}),
-                        500)
+                jsonify({
+                    'Internal Exception during creating new entity': str(e)
+                }),
+                500)
