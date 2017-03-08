@@ -130,8 +130,9 @@ class ModelsTestCase(unittest.TestCase):
             db.session.commit()
             for rec in self.product_data:
                 db.session.add(StockProduct(**rec))
-            # for rec in self.product_item_data:
-            #     db.session.add(StockProductItem(**rec))
+            db.session.commit()
+            for rec in self.product_item_data:
+                db.session.add(StockProductItem(**rec))
             db.session.commit()
 
             categories = db.session.query(StockProductCategory)
