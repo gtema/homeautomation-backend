@@ -66,7 +66,7 @@ class BaseResource(Resource):
         try:
             if (name is not None):
                 items = self.model.query.filter(
-                    self.model.name.like('%{}%'.format(name))
+                    self.model.name.ilike('%{}%'.format(name))
                 )
 
             if self.schema.many:
