@@ -127,10 +127,11 @@ class ModelsTestCase(unittest.TestCase):
         with self.app.app_context():
             for rec in self.category_data:
                 db.session.add(StockProductCategory(**rec))
+            db.session.commit()
             for rec in self.product_data:
                 db.session.add(StockProduct(**rec))
-            for rec in self.product_item_data:
-                db.session.add(StockProductItem(**rec))
+            # for rec in self.product_item_data:
+            #     db.session.add(StockProductItem(**rec))
             db.session.commit()
 
             categories = db.session.query(StockProductCategory)
@@ -157,8 +158,10 @@ class ModelsTestCase(unittest.TestCase):
         with self.app.app_context():
             for rec in self.category_data:
                 db.session.add(StockProductCategory(**rec))
+            db.session.commit()
             for rec in self.product_data:
                 db.session.add(StockProduct(**rec))
+            db.session.commit()
             for rec in self.product_item_data:
                 db.session.add(StockProductItem(**rec))
             db.session.commit()
