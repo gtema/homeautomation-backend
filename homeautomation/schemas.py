@@ -2,7 +2,7 @@ from marshmallow import fields, ValidationError
 from flask_marshmallow import Marshmallow
 
 from .models import User, Role, StockProductCategory, StockProduct,\
-                                  StockProductItem
+    StockProductItem
 
 ma = Marshmallow()
 
@@ -78,4 +78,4 @@ class ProductItemSchema(ma.ModelSchema):
     is_started = fields.Boolean()
     is_disposed = fields.Boolean()
     expiry_date = fields.Date()
-    is_valid = fields.Boolean()
+    is_valid = fields.Boolean(dump_only=True)

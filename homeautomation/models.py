@@ -3,27 +3,27 @@ from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 from flask_security import UserMixin, RoleMixin, SQLAlchemyUserDatastore
-
+from sqlalchemy.sql import column
 
 db = SQLAlchemy()
 
 
 class BaseCrud():
-    '''
+    """
     Base CRUD Enservices Entity class
     it requires SQLAlchemy model, Marshmallow schema
-    '''
+    """
     def add(self, entity):
-        '''
+        """
         ADD entity from the model itself
-        '''
+        """
         db.session.add(entity)
         db.session.commit()
 
     def update(self, schema, json):
-        '''
+        """
         UPDATE the entity
-        '''
+        """
         data, errors = schema.load(json,
                                    instance=self,
                                    session=db.session)
@@ -34,9 +34,9 @@ class BaseCrud():
         return data, errors
 
     def delete(self, item):
-        '''
+        """
         DELETE method to drop product
-        '''
+        """
         db.session.delete(item)
         db.session.commit()
 
@@ -102,9 +102,9 @@ user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 # homeautomation models
 
 class StockProductCategory(db.Model, BaseCrud):
-    '''
+    """
     Category model
-    '''
+    """
 
     __tablename__ = "cat_category"
 
@@ -116,9 +116,9 @@ class StockProductCategory(db.Model, BaseCrud):
 
 
 class StockProductItem(db.Model, BaseCrud):
-    '''
+    """
     Product item model
-    '''
+    """
     __tablename__ = "cat_prod_item"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -127,24 +127,18 @@ class StockProductItem(db.Model, BaseCrud):
                                          ondelete='CASCADE',
                                          onupdate='CASCADE'),
                            nullable=False)
-    amount = db.Column(db.Integer, default=1)
+    amount = db.Column(db.Integer, default=1, nullable=False)
     is_started = db.Column(db.Boolean, default=False)
     is_disposed = db.Column(db.Boolean, default=False)
     create_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     expiry_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    is_valid = db.column_property(is_disposed == False and amount > 0)
-
-    # @hybrid_property
-    # def is_valid(self):
-    #     if self.amount > 0 and not self.is_disposed:
-    #         return True
-    #     return False
+    is_valid = db.column_property((amount > 0) & (is_disposed.is_(False)))
 
 
 class StockProduct(db.Model, BaseCrud):
-    '''
+    """
     Product model
-    '''
+    """
     __tablename__ = "cat_product"
 
     id = db.Column(db.Integer,
@@ -159,17 +153,20 @@ class StockProduct(db.Model, BaseCrud):
 
     @hybrid_property
     def valid_items(self):
+        " join (select) valid product items"
         return StockProductItem.query.filter(
-                            StockProductItem.product_id == self.id,
-                            StockProductItem.is_valid)
+            StockProductItem.product_id == self.id,
+            StockProductItem.is_valid)
 
     @hybrid_property
     def open_items(self):
+        "filter started valid items"
         return self.valid_items.filter(
-                            StockProductItem.is_started)
+            StockProductItem.is_started)
 
     @hybrid_property
     def amount(self):
+        "calculate amount of items"
         if (self.sum_amounts is False):
             result = self.valid_items.count()
         else:
@@ -178,14 +175,16 @@ class StockProduct(db.Model, BaseCrud):
 
     @hybrid_property
     def first_started_id(self):
+        "get the id of the open item with earliest expiry"
         item = self.open_items.\
-                    order_by(StockProductItem.expiry_date).\
-                    first()
-        return item.id
+            order_by(StockProductItem.expiry_date).\
+            first()
+        return item.id if item is not None else None
 
     @hybrid_property
     def first_started_ed(self):
+        "get the expiry_date of the open item with the earliest expiry"
         item = self.open_items.\
-                    order_by(StockProductItem.expiry_date).\
-                    first()
-        return item.expiry_date
+            order_by(StockProductItem.expiry_date).\
+            first()
+        return item.expiry_date if item is not None else None

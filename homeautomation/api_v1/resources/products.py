@@ -1,4 +1,5 @@
 from flask import jsonify, make_response, abort, current_app
+from flask_restful import reqparse
 
 from homeautomation.models import StockProduct
 from homeautomation.schemas import ProductSchema
@@ -16,9 +17,16 @@ class StockCategoryProducts(BaseResource):
         super().__init__(StockProduct,
                          ProductSchema(many=True),
                          StockProduct.category_id)
+        parser = reqparse.RequestParser()
+        parser.add_argument('name', type=str, help='Product name')
+        self._parser = parser
 
-    def get(self, id):
+    def get(self, id=0):
         current_app.logger.debug('GET products %s' % (repr(id)))
+        args = self._parser.parse_args()
+        if 'name' in args and args['name'] is not None:
+            print("Requesting products with name %s" % args['name'])
+            return super().get_by_name(args['name'])
         return super().get(id)
 
     def post(self, id=0):
@@ -77,6 +85,9 @@ class StockCategoryProduct(BaseResource):
 
 # url, resource, endpoint, description
 endpoints = (
+    ('/stock/products', StockCategoryProducts,
+     'products_with_filter', '[GET] all products with a name filter '
+     '(given as request parameter)'),
     ('/stock/products_by_category_id/<int:id>', StockCategoryProducts,
      'products_by_category', '[GET] all products of a given category'),
     ('/stock/product/<int:id>', StockCategoryProduct,

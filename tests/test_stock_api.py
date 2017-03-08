@@ -9,23 +9,26 @@ from homeautomation import create_app
 from homeautomation.models import db
 
 
-"""Api tests
+"""Stock Api tests
 """
-
-API_URL_PREFIX = "/api/v0/stock"
-
-
-class testConfig(object):
-    # Setup an in-memory SQLite DB, create schema
-    TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite://'
-    SECURITY_PASSWORD_HASH = 'plaintext'
-    SECURITY_PASSWORD_SALT = '2'
-    SEC_AUTH_URL_RULE = '/auth'
-    DEBUG = False
 
 
 class ApiTestCase(unittest.TestCase):
+    """ Test stock API endpoints and do some basic functionality tests,
+    i.e. Add entity, get entity and compare with initial data;
+    delete entity; etc.
+    """
+
+    API_URL_PREFIX = "/api/v0/stock"
+
+    class testConfig():
+        # Setup an in-memory SQLite DB, create schema
+        TESTING = True
+        SQLALCHEMY_DATABASE_URI = 'sqlite://'
+        SECURITY_PASSWORD_HASH = 'plaintext'
+        SECURITY_PASSWORD_SALT = '2'
+        SEC_AUTH_URL_RULE = '/auth'
+        DEBUG = False
 
     @classmethod
     def setUpClass(cls):
@@ -35,7 +38,7 @@ class ApiTestCase(unittest.TestCase):
         # load config given in APP_SETTINGS or use testConfig object
         config = os.environ.get('APP_SETTINGS')
         if config is None:
-            config = testConfig
+            config = __class__.testConfig
 
         cls.app = create_app(config)
         cls.test_client = cls.app.test_client()
@@ -47,6 +50,13 @@ class ApiTestCase(unittest.TestCase):
                                        password=encrypt_password('plaintext'),
                                        api_key='adglhve')
             db.session.commit()
+
+    @classmethod
+    def tearDownClass(cls):
+        """Tear down created resources
+        """
+        with cls.app.app_context():
+            db.drop_all()
 
     def setUp(self):
         """
@@ -119,7 +129,7 @@ class ApiTestCase(unittest.TestCase):
         """
         Internal add entity
         """
-        url = '{:s}/{:s}'.format(API_URL_PREFIX, type)
+        url = '{:s}/{:s}'.format(self.API_URL_PREFIX, type)
         rv = self.test_client.post(url,
                                    data=json.dumps(entity),
                                    content_type='application/json',
@@ -137,7 +147,7 @@ class ApiTestCase(unittest.TestCase):
         Internal delete entity
         """
         id_selector = "/" + repr(id)
-        url = '{:s}/{:s}{:s}'.format(API_URL_PREFIX, type, id_selector)
+        url = '{:s}/{:s}{:s}'.format(self.API_URL_PREFIX, type, id_selector)
         rv = self.test_client.delete(url,
                                      headers=self.buildRequestHeader()
                                      )
@@ -150,7 +160,7 @@ class ApiTestCase(unittest.TestCase):
         """
         Internal modify entity
         """
-        url = '{:s}/{:s}/{:d}'.format(API_URL_PREFIX, type, original_id)
+        url = '{:s}/{:s}/{:d}'.format(self.API_URL_PREFIX, type, original_id)
         rv = self.test_client.put(url,
                                   data=json.dumps(entity),
                                   content_type='application/json',
@@ -167,7 +177,7 @@ class ApiTestCase(unittest.TestCase):
         Internal GET entity
         """
         id_selector = "/" + repr(id) if id else ''
-        url = '{:s}/{:s}{:s}'.format(API_URL_PREFIX, type, id_selector)
+        url = '{:s}/{:s}{:s}'.format(self.API_URL_PREFIX, type, id_selector)
         rv = self.test_client.get(url,
                                   headers=self.buildRequestHeader())
         ret = json.loads(rv.data)
@@ -329,6 +339,7 @@ class ApiTestCase(unittest.TestCase):
         self.login()
         test_entity = self.product1.copy()
         'create parent category'
+
         ret = self.__add_entity('category', self.category1)
         test_entity['category_id'] = ret['obj']['id']
 

@@ -24,6 +24,8 @@ class BaseResource(Resource):
     def get(self, id=0):
         """
         GET method to get JSON representation of items by qualifier
+
+        :param id: entity__id__ attribute (__id__ is a self.qualifier)
         """
         # if id == -1:
         #     return make_response(
@@ -41,11 +43,40 @@ class BaseResource(Resource):
 
             if self.schema.many:
                 # multiple items
-                res = self.schema.dump(items).data
+                res = make_response(self.schema.jsonify(items), 200)
             else:
                 # single item
                 # if nothing found return 404 (access by ID not found)
-                res = self.schema.dump(items.first_or_404()).data
+                res = make_response(self.schema.jsonify(items.first_or_404()),
+                                    200)
+        except DatabaseError as e:
+            res = make_response(
+                jsonify({'Internal Exception': str(e)}),
+                500)
+
+        return res
+
+    def get_by_name(self, name):
+        """
+        GET items by name
+
+        :param name: entity name
+
+        """
+        try:
+            if (name is not None):
+                items = self.model.query.filter(
+                    self.model.name.like('%{}%'.format(name))
+                )
+
+            if self.schema.many:
+                # multiple items
+                res = make_response(self.schema.jsonify(items), 200)
+            else:
+                # single item
+                # if nothing found return 404 (access by ID not found)
+                res = make_response(self.schema.jsonify(items.first_or_404()),
+                                    200)
         except DatabaseError as e:
             res = make_response(
                 jsonify({'Internal Exception': str(e)}),
@@ -56,6 +87,8 @@ class BaseResource(Resource):
     def put(self, id=0):
         """
         PUT method to modify existing item
+
+        :param id: entity__id__ attribute (__id__ is a self.qualifier)
         """
         json = request.get_json()
 
@@ -78,7 +111,7 @@ class BaseResource(Resource):
             if errors:
                 return make_response(jsonify(errors), 422)
             else:
-                return self.schema.dump(item).data
+                return make_response(self.schema.jsonify(item), 200)
         except DatabaseError as e:
             return make_response(
                 jsonify({'Internal Exception during updating entity':
@@ -114,6 +147,8 @@ class BaseResource(Resource):
         """
         DELETE method to drop product
         delete without id will return 405
+
+        :param id: entity__id__ attribute (__id__ is a self.qualifier)
         """
         if id == 0:
             return make_response(jsonify({
