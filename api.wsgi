@@ -6,4 +6,4 @@ def application(environ, start_response):
         os.environ[key] = environ.get(key, '')
     from homeautomation import create_app as _application
 
-    return _application(environ, start_response)
+    return _application().wsgi_app(environ, start_response)

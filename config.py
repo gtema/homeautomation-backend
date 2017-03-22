@@ -38,3 +38,9 @@ class Local(Config):
 class Travis(Config):
     SQLALCHEMY_DATABASE_URI = 'postgres://postgres@localhost/travis_ci_test'
     DEBUG = True
+
+
+class Kubernetes(Config):
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    PORT = os.environ.get('PORT', 4000)
+    DEBUG = True

@@ -1,26 +1,36 @@
-FROM python:3.6-alpine
+FROM fedora/apache:latest
 
 LABEL version="1.0"
 LABEL description="The backend of my Homeautomatizaion"
 
-EXPOSE 5000
+EXPOSE 443
 
-WORKDIR /code
+# install packages
+RUN dnf -y update && dnf -y install \
+  httpd \
+  mod_ssl \
+  mod_wsgi \
+  python3 \
+  python3-mod_wsgi \
+  && dnf clean all
 
-# install postgresql
-RUN apk update && \
-    apk add --virtual build-deps gcc python-dev musl-dev && \
-    apk add postgresql-dev
+# fix httpd config
+RUN sed -i.orig 's/#ServerName/ServerName/' /etc/httpd/conf/httpd.conf
+
+WORKDIR /var/www/homeautomation
 
 # env var for further reference
 ENV REQ_FILE=requirements.txt
 
 # copy requirements file
-COPY ${REQ_FILE} /code
-RUN pip install -r ${REQ_FILE}
+COPY ${REQ_FILE} /var/www/homeautomation
+RUN pip3 install -r ${REQ_FILE}
 
-ADD . /code
+COPY . /var/www/homeautomation
+
 # compile files
-RUN python -m compileall .
+RUN python3 -m compileall .
 
-CMD ["python", "run.py"]
+RUN cp homeautomation_vhost.conf /etc/httpd/conf.d
+
+CMD ["/run-apache.sh"]
