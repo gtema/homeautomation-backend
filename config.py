@@ -32,6 +32,7 @@ class HerokuConfig(Config):
 
 class Local(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///../app.sqlite'
+    # SQLALCHEMY_DATABASE_URI = 'postgres://homeautomation@localhost/homeautomation'
     DEBUG = True
 
 

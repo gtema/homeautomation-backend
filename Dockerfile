@@ -26,11 +26,15 @@ ENV REQ_FILE=requirements.txt
 COPY ${REQ_FILE} /var/www/homeautomation
 RUN pip3 install -r ${REQ_FILE}
 
+COPY homeautomation_vhost.conf /etc/httpd/conf.d
+
 COPY . /var/www/homeautomation
 
-# compile files
-RUN python3 -m compileall .
+RUN chown -R apache:apache /var/www/homeautomation
+RUN chmod 774 /var/www/homeautomation
+RUN chmod 774 /var/www/homeautomation/app.sqlite
 
-RUN cp homeautomation_vhost.conf /etc/httpd/conf.d
+# compile files
+# RUN python3 -m compileall .
 
 CMD ["/run-apache.sh"]

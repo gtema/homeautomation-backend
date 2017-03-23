@@ -1,14 +1,15 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+# from flask import Flask
+# from flask_sqlalchemy import SQLAlchemy
 import csv
 import os
-import random
+import sys
+# import random
 from base64 import b64encode
 
 from flask_security.utils import encrypt_password
 from homeautomation import create_app
 from homeautomation.models import db, StockProductCategory, StockProduct,\
-                                  StockProductItem, User, Role, roles_users, user_datastore
+                                  user_datastore
 
 app = create_app()
 
@@ -66,7 +67,7 @@ with app.app_context():
 
     try:
         app.logger.info('Filling DB with categories')
-        with open('categories.csv') as f:
+        with open('categories.csv', encoding='utf-8') as f:
             # assume first line is header
             cf = csv.DictReader(f, delimiter=',')
             for row in cf:
@@ -83,7 +84,7 @@ with app.app_context():
         db.session.commit()
 
         app.logger.info('Filling DB with products')
-        with open('products.csv') as f:
+        with open('products.csv', encoding='utf-8') as f:
             # assume first line is header
             cf = csv.DictReader(f, delimiter=',')
             for row in cf:
